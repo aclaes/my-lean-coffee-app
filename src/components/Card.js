@@ -30,7 +30,7 @@ export default function Card(props) {
   );
 }
 
-function CardShowMode({ name, content, onEnableEditMode }) {
+function CardShowMode({ id, name, content, onEnableEditMode }) {
   return (
     <>
       <CardContent>
@@ -38,7 +38,17 @@ function CardShowMode({ name, content, onEnableEditMode }) {
         <Typography>{name}</Typography>
       </CardContent>
       <CardActions>
-        <Button size="small">Delete</Button>
+        <Button
+          size="small"
+          onClick={async () => {
+            const response = await fetch("/api/card/" + id, {
+              method: "DELETE",
+            });
+            console.log(await response.json());
+          }}
+        >
+          Delete
+        </Button>
         <Button size="small" onClick={onEnableEditMode}>
           Edit
         </Button>
@@ -51,10 +61,20 @@ function CardEditMode({ name, content, id, onDisableEditMode }) {
   const [contentValue, setContentValue] = useState(content);
   const [nameValue, setNameValue] = useState(name);
 
-  function submit(event) {
+  async function submit(event) {
     event.preventDefault();
 
     console.log(id, nameValue, contentValue);
+
+    const response = await fetch("/api/card/" + id, {
+      method: "PUT",
+      body: JSON.stringify({
+        content: contentValue,
+        name: nameValue,
+      }),
+    });
+    console.log(await response.json());
+
     onDisableEditMode();
   }
 
